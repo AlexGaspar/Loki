@@ -1,0 +1,22 @@
+{
+  "name": "loki",
+  "version": "0.0.1",
+  "description": "Exit popup",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dash-bob/Loki.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dash-bob/Loki/issues"
+  },
+  "homepage": "https://github.com/Dash-bob/Loki#readme",
+  "devDependencies": {
+    "webpack": "^1.12.14"
+  }
+}

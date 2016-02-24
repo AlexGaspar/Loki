@@ -4,6 +4,8 @@
   "description": "Exit popup",
   "main": "index.js",
   "scripts": {
+    "start": "webpack ./index.js loki.js",
+    "ds": "wepack-dev-server ./index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,6 +19,7 @@
   },
   "homepage": "https://github.com/Dash-bob/Loki#readme",
   "devDependencies": {
-    "webpack": "^1.12.14"
+    "webpack": "^1.12.14",
+    "webpack-dev-server": "^1.14.1"
   }
 }

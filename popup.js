@@ -15,7 +15,8 @@ var URLS = [
 ];
 
 var __bar = {
-  html: require('./html/popup.html'),
+  // html: require('./html/popup.html'),
+  html: '', 
   iframe: {
     wrapper: null,
     css: '[[<css>]]',

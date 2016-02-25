@@ -14,12 +14,12 @@ var URLS = [
   { url: 'http://www.teatower.com', label: 'Tea Tower' }
 ];
 
+require('./popup.css');
+
 var __bar = {
-  // html: require('./html/popup.html'),
-  html: '', 
+  html: require("./popup.handlebars"),
   iframe: {
-    wrapper: null,
-    css: '[[<css>]]',
+    wrapper: null
   },
   getURLs: function () {
     if(__bar.urls) {
@@ -157,7 +157,7 @@ var __bar = {
    */
   main: function () {
     if(__bar.readStorage(IFRAME_STORAGE) !== false) {
-      __bar.insertCSS(__bar.iframe.css);
+      require('./popup.css');
       __bar.insertBar();
     }
   },

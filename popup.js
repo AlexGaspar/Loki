@@ -1,9 +1,9 @@
 var IFRAME_ID = 'SLDSKDAKDSQK';
 var IFRAME_WINDOW = 'qsldkqskl';
-var IFRAME_WRAPPER_NAME = '__bar-iframe--wrapper';
-var IFRAME_WRAPPER_ID = '__bar-wrapper';
-var IFRAME_NAME = '__bar-iframe';
-var IFRAME_STORAGE = '__bar.display';
+var IFRAME_WRAPPER_NAME = '__DB_POPUP-iframe--wrapper';
+var IFRAME_WRAPPER_ID = '__DB_POPUP-wrapper';
+var IFRAME_NAME = '__DB_POPUP-iframe';
+var IFRAME_STORAGE = '__DB_POPUP.display';
 
 
 var URLS = [
@@ -14,21 +14,21 @@ var URLS = [
   { url: 'http://www.teatower.com', label: 'Tea Tower' }
 ];
 
-require('./popup.css');
+require('./css/iframe.css');
 
-var __bar = {
+var __exitpage = {
   html: require("./popup.handlebars"),
   iframe: {
     wrapper: null
   },
   getURLs: function () {
-    if(__bar.urls) {
-      return __bar.URLs;
+    if(__exitpage.urls) {
+      return __exitpage.URLs;
     }
 
-    __bar.urls = __bar.removeSelfFromURLS(URLS);
+    __exitpage.urls = __exitpage.removeSelfFromURLS(URLS);
 
-    return __bar.urls;
+    return __exitpage.urls;
   },
 
   /**
@@ -91,7 +91,7 @@ var __bar = {
   },
 
   generateIframe: function (classes, src, loadListener) {
-    var iframe = __bar.generateNode(
+    var iframe = __exitpage.generateNode(
       'iframe',
       { 'src': src,
         'className': classes,
@@ -115,15 +115,15 @@ var __bar = {
   },
 
   removeNodeFromTag: function (tagName, el) {
-    return __bar.getElementByTagName(tagName).removeChild(el);
+    return __exitpage.getElementByTagName(tagName).removeChild(el);
   },
 
   appendNodeToTag: function (tagName, el) {
-    return __bar.getElementByTagName(tagName).appendChild(el);
+    return __exitpage.getElementByTagName(tagName).appendChild(el);
   },
 
   insertCSS: function (css) {
-    var head  = document.head || __bar.getElementByTagName('head');
+    var head  = document.head || __exitpage.getElementByTagName('head');
     var style = document.createElement('style');
     style.type = "text/css";
 
@@ -156,16 +156,16 @@ var __bar = {
    * Bar Logic
    */
   main: function () {
-    if(__bar.readStorage(IFRAME_STORAGE) !== false) {
+    if(__exitpage.readStorage(IFRAME_STORAGE) !== false) {
       require('./popup.css');
-      __bar.insertBar();
+      __exitpage.insertBar();
     }
   },
 
   closeHandler: function () {
-    __bar.removeNodeFromTag('body', __bar.iframe.wrapper);
-    __bar.resetContent()
-    __bar.writeStorage(IFRAME_STORAGE, false);
+    __exitpage.removeNodeFromTag('body', __exitpage.iframe.wrapper);
+    __exitpage.resetContent()
+    __exitpage.writeStorage(IFRAME_STORAGE, false);
   },
 
   /*
@@ -173,10 +173,10 @@ var __bar = {
    * it also won't work on absolutes elements
    */
   resetContent: function () {
-    __bar.getElementByTagName('html').style.marginTop = '0';
+    __exitpage.getElementByTagName('html').style.marginTop = '0';
   },
   pushContent: function () {
-    __bar.getElementByTagName('html').style.marginTop = '50px';
+    __exitpage.getElementByTagName('html').style.marginTop = '50px';
   },
 
   removeSelfFromURLS: function(urls) {
@@ -185,7 +185,7 @@ var __bar = {
     var selfId = null;
 
     for(var i=0, max=urls.length; i< max; i++) {
-      if (currentWebsite == __bar.hostnameFromUrl(urls[i].url)) {
+      if (currentWebsite == __exitpage.hostnameFromUrl(urls[i].url)) {
         selfId = i;
       }
     }
@@ -204,7 +204,7 @@ var __bar = {
    */
   getRandomURLs: function (limit) {
     var res = {urls: []};
-    var urls = __bar.getURLs();
+    var urls = __exitpage.getURLs();
     var limit = limit || 3;
 
     if (limit > urls.length) {
@@ -212,7 +212,7 @@ var __bar = {
     }
 
     for(var i=0; i < limit; i++) {
-      var site = __bar.getAndremoveRandomlyFromArray(urls);
+      var site = __exitpage.getAndremoveRandomlyFromArray(urls);
 
       res.urls.push({
         url: site.url,
@@ -225,7 +225,7 @@ var __bar = {
 
   insertBar: function () {
     var iframe;
-    var iframeWrapper = __bar.generateNode(
+    var iframeWrapper = __exitpage.generateNode(
       'div',
        { 'id': IFRAME_WRAPPER_ID,
          'className': IFRAME_WRAPPER_NAME }
@@ -235,25 +235,25 @@ var __bar = {
       var iframeContent = window[IFRAME_WINDOW] = iframe.contentWindow;
 
       var fdIframe = iframeContent.document.open();
-      fdIframe.write(Mustache.render(__bar.html, __bar.getRandomURLs(4)));
-      // fdIframe.write(__bar.renderTemplate(__bar.html, __bar.getRandomURLs()));
+      fdIframe.write(Mustache.render(__exitpage.html, __exitpage.getRandomURLs(4)));
+      // fdIframe.write(__exitpage.renderTemplate(__exitpage.html, __exitpage.getRandomURLs()));
       fdIframe.close();
 
       // Make some space for the bar
-      __bar.pushContent();
+      __exitpage.pushContent();
 
       iframe.style.display = "block";
       iframe.removeEventListener('load', loadListener);
     };
 
-    iframe = __bar.generateIframe(IFRAME_NAME, 'about:blank', loadListener);
+    iframe = __exitpage.generateIframe(IFRAME_NAME, 'about:blank', loadListener);
 
-    __bar.iframe.wrapper = iframeWrapper;
+    __exitpage.iframe.wrapper = iframeWrapper;
     iframeWrapper.appendChild(iframe);
 
-    __bar.appendNodeToTag('body', iframeWrapper);
+    __exitpage.appendNodeToTag('body', iframeWrapper);
   }
 };
 
 // Init the shit
-__bar.main();
+__exitpage.main();

@@ -6,6 +6,17 @@ var IFRAME_NAME = '__DB_POPUP-iframe';
 var IFRAME_STORAGE = '__DB_POPUP.display';
 
 
+var DUMMY_DATA = {
+        sites: [{
+          name: 'coucou',
+          catchPhrase: 'Get it'
+        }, {
+          name: 'webmaster',
+          catchPhrase: 'Coupon 5'
+        }]
+};
+
+
 var URLS = [
   { url: 'http://www.google.be', label: 'Google' },
   { url: 'http://www.yahoo.com', label: 'Yahoo' },
@@ -20,15 +31,6 @@ var __exitpage = {
   html: require("./html/popup.handlebars"),
   iframe: {
     wrapper: null
-  },
-  getURLs: function () {
-    if(__exitpage.urls) {
-      return __exitpage.URLs;
-    }
-
-    __exitpage.urls = __exitpage.removeSelfFromURLS(URLS);
-
-    return __exitpage.urls;
   },
 
   /**
@@ -71,12 +73,6 @@ var __exitpage = {
         var cookieValue = escape(JSON.stringify(value)) + ((expireDays === null) ? "" : "; expires=" + expireDate.toUTCString());
         document.cookie = name + "=" + cookieValue;
     }
-  },
-
-  renderTemplate: function(template, options) {
-    return template.replace(/\[\[(\w*?)\]\]/g, function(match, p1, offset, string) {
-      return (typeof options[p1] !== 'undefined') ? options[p1] : '';
-    });
   },
 
   generateNode: function (type, params) {
@@ -122,20 +118,6 @@ var __exitpage = {
     return __exitpage.getElementByTagName(tagName).appendChild(el);
   },
 
-  insertCSS: function (css) {
-    var head  = document.head || __exitpage.getElementByTagName('head');
-    var style = document.createElement('style');
-    style.type = "text/css";
-
-    if (style.styleSheet){
-      style.styleSheet.cssText = css;
-    } else {
-      style.appendChild(document.createTextNode(css));
-    }
-
-    head.appendChild(style);
-  },
-
   hostnameFromUrl: function(url) {
     return url.replace(/.*?:\/\//g, '');
   },
@@ -153,12 +135,12 @@ var __exitpage = {
   },
 
   /**
-   * Bar Logic
+   * Popup Logic
    */
   main: function () {
     if(__exitpage.readStorage(IFRAME_STORAGE) !== false) {
       require('./css/iframe.css');
-      __exitpage.insertBar();
+      __exitpage.insertPopup();
     }
   },
 
@@ -168,62 +150,7 @@ var __exitpage = {
     __exitpage.writeStorage(IFRAME_STORAGE, false);
   },
 
-  /*
-   * These two will break if the site is already setting maring on <html>
-   * it also won't work on absolutes elements
-   */
-  resetContent: function () {
-    __exitpage.getElementByTagName('html').style.marginTop = '0';
-  },
-  pushContent: function () {
-    __exitpage.getElementByTagName('html').style.marginTop = '50px';
-  },
-
-  removeSelfFromURLS: function(urls) {
-    var urls = urls;
-    var currentWebsite = window.location.hostname;
-    var selfId = null;
-
-    for(var i=0, max=urls.length; i< max; i++) {
-      if (currentWebsite == __exitpage.hostnameFromUrl(urls[i].url)) {
-        selfId = i;
-      }
-    }
-
-    if (selfId) {
-      urls.splice(selfId, 1);
-    }
-
-    return urls;
-  },
-
-  /*
-   * Since tag are hard coded
-   * limit won't work until we use a proper template engine
-   * or generate the html before rendering
-   */
-  getRandomURLs: function (limit) {
-    var res = {urls: []};
-    var urls = __exitpage.getURLs();
-    var limit = limit || 3;
-
-    if (limit > urls.length) {
-      limit = urls.length;
-    }
-
-    for(var i=0; i < limit; i++) {
-      var site = __exitpage.getAndremoveRandomlyFromArray(urls);
-
-      res.urls.push({
-        url: site.url,
-        label: site.label
-      });
-    }
-
-    return res;
-  },
-
-  insertBar: function () {
+  insertPopup: function () {
     var iframe;
     var iframeWrapper = __exitpage.generateNode(
       'div',
@@ -235,12 +162,9 @@ var __exitpage = {
       var iframeContent = window[IFRAME_WINDOW] = iframe.contentWindow;
 
       var fdIframe = iframeContent.document.open();
-      fdIframe.write(Mustache.render(__exitpage.html, __exitpage.getRandomURLs(4)));
-      // fdIframe.write(__exitpage.renderTemplate(__exitpage.html, __exitpage.getRandomURLs()));
+      // Replace the object by data from the API
+      fdIframe.write(__exitpage.html(DUMMY_DATA));
       fdIframe.close();
-
-      // Make some space for the bar
-      __exitpage.pushContent();
 
       iframe.style.display = "block";
       iframe.removeEventListener('load', loadListener);

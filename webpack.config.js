@@ -1,5 +1,5 @@
 module.exports = {
-  entry: './popup.js',
+  entry: './index.js',
   output: {
     path: __dirname,
     filename: 'loki.js'

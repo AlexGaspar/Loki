@@ -17,7 +17,7 @@ var URLS = [
 require('./css/iframe.css');
 
 var __exitpage = {
-  html: require("./popup.handlebars"),
+  html: require("./html/popup.handlebars"),
   iframe: {
     wrapper: null
   },
@@ -157,7 +157,7 @@ var __exitpage = {
    */
   main: function () {
     if(__exitpage.readStorage(IFRAME_STORAGE) !== false) {
-      require('./popup.css');
+      require('./css/iframe.css');
       __exitpage.insertBar();
     }
   },

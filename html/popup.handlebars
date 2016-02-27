@@ -1,9 +1,42 @@
-<div id="popup">
-	<h2>Hey... Wait...</h2>
-	{{#sites}}
-		<div>
-			<h3>{{hostname}}</h3>
-			<p>{{catchPhrase}}</p>
-		</div>	
-	{{/sites}}
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+
+		<style>
+		    .modal-content {
+		    	width: 900px;
+		    	max-width: 85%;
+				
+				padding: 30px;
+				margin: 30px auto;
+
+				background-color: #ECF3FA;
+		    }
+
+		    .modal-body > .row {
+		    	background-color: #fff;
+		    }
+		</style>
+	</head>
+<body>
+
+<div id="modal">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h2>Hey... Wait...</h2>
+		</div>
+		<div class="modal-body">
+			<div class="row">
+			{{#sites}}
+				<div class="col-cs-12 col-sm-6 partner-container">			
+					<h3>{{hostname}}</h3>
+					<p>{{catchPhrase}}</p>
+				</div>
+			{{/sites}}
+			</div>	
+		</div>
+		<div class="modal-footer"></div>	
+	</div>
 </div>
+</body>
+</html>

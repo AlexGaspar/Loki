@@ -1,9 +1,13 @@
+var request = require('superagent');
+
 var IFRAME_ID = 'SLDSKDAKDSQK';
 var IFRAME_WINDOW = 'qsldkqskl';
 var IFRAME_WRAPPER_NAME = '__DB_POPUP-iframe--wrapper';
 var IFRAME_WRAPPER_ID = '__DB_POPUP-wrapper';
 var IFRAME_NAME = '__DB_POPUP-iframe';
 var IFRAME_STORAGE = '__DB_POPUP.display';
+
+var API_HOSTNAME = 'http://192.168.99.100:3001/api/v1';
 
 
 var DUMMY_DATA = {
@@ -24,8 +28,6 @@ var URLS = [
   { url: 'http://www.coteclair.com', label: 'Cote Clair' },
   { url: 'http://www.teatower.com', label: 'Tea Tower' }
 ];
-
-require('./css/iframe.css');
 
 var __exitpage = {
   html: require("./html/popup.handlebars"),
@@ -123,24 +125,19 @@ var __exitpage = {
   },
 
   /**
-   * /!\ this will modify array
-   * Return randomly a value from a given array, and remove it from the array
-   * @param  {Array}       array
-   * @return {{Object}}
-   */
-  getAndremoveRandomlyFromArray: function (array) {
-    var index = Math.floor(Math.random()*array.length);
-
-    return array.splice(index, 1)[0];
-  },
-
-  /**
    * Popup Logic
    */
   main: function () {
     if(__exitpage.readStorage(IFRAME_STORAGE) !== false) {
       require('./css/iframe.css');
-      __exitpage.insertPopup();
+
+      request
+        .get(API_HOSTNAME + '/sites')
+        .end(function(err, res) {
+          if (err) { return console.log('something went wrong...', err);}
+          __exitpage.insertPopup(res.body);      
+        });
+      
     }
   },
 
@@ -150,7 +147,7 @@ var __exitpage = {
     __exitpage.writeStorage(IFRAME_STORAGE, false);
   },
 
-  insertPopup: function () {
+  insertPopup: function (sites) {
     var iframe;
     var iframeWrapper = __exitpage.generateNode(
       'div',
@@ -163,7 +160,7 @@ var __exitpage = {
 
       var fdIframe = iframeContent.document.open();
       // Replace the object by data from the API
-      fdIframe.write(__exitpage.html(DUMMY_DATA));
+      fdIframe.write(__exitpage.html({sites: sites}));
       fdIframe.close();
 
       iframe.style.display = "block";

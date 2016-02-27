@@ -9,26 +9,6 @@ var IFRAME_STORAGE = '__DB_POPUP.display';
 
 var API_HOSTNAME = 'http://192.168.99.100:3001/api/v1';
 
-
-var DUMMY_DATA = {
-        sites: [{
-          name: 'coucou',
-          catchPhrase: 'Get it'
-        }, {
-          name: 'webmaster',
-          catchPhrase: 'Coupon 5'
-        }]
-};
-
-
-var URLS = [
-  { url: 'http://www.google.be', label: 'Google' },
-  { url: 'http://www.yahoo.com', label: 'Yahoo' },
-  { url: 'http://127.0.0.1', label: 'Facebook' },
-  { url: 'http://www.coteclair.com', label: 'Cote Clair' },
-  { url: 'http://www.teatower.com', label: 'Tea Tower' }
-];
-
 var __exitpage = {
   html: require("./html/popup.handlebars"),
   iframe: {

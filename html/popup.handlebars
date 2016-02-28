@@ -1,23 +1,6 @@
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
-		<style>
-			body { background-color: rgba(0,0,0,0.3); }
-
-		    .modal-content {
-		    	width: 900px;
-		    	max-width: 85%;
-				
-				padding: 30px;
-				margin: 30px auto;
-
-				background-color: #ECF3FA;
-		    }
-
-		    .modal-body > .row {
-		    	background-color: #fff;
-		    }
-		</style>
 	</head>
 <body>
 
@@ -27,19 +10,21 @@
 			<span aria-hidden="true">&times;</span>
 		</button>
 		<div class="modal-header">
-			<h2>Hey... Wait...</h2>
+			<h3>Merci de votre visite !</h3>
+			<h4>Avez-vous vu les offres de nos partenaires ?</h4>
 		</div>
 		<div class="modal-body">
 			<div class="row">
 			{{#sites}}
 				<div class="col-cs-12 col-sm-6 partner-container">			
+					<img src="https://www.woorank.com/assets/img/exit-page/internet-vista.png" />
 					<h3>{{hostname}}</h3>
 					<p>{{catchPhrase}}</p>
+					<button class="btn">Tous gratos mon gars !</button>
 				</div>
 			{{/sites}}
 			</div>	
 		</div>
-		<div class="modal-footer"></div>	
 	</div>
 </div>
 

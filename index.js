@@ -127,6 +127,22 @@ var __exitpage = {
     __exitpage.writeStorage(IFRAME_STORAGE, false);
   },
 
+  // Look into a way to require it directly from handlebar template
+  injectCSS: function(iframeDocument) {
+    var css = require("./css/loki.less").toString();
+    var head = iframeDocument.getElementsByTagName('head')[0];
+
+    var style = document.createElement("style") 
+    style.type = 'text/css';
+    if (style.styleSheet){
+      style.styleSheet.cssText = css;
+    } else {
+      style.appendChild(document.createTextNode(css));
+    }
+
+    head.appendChild(style);
+  },
+
   insertPopup: function (sites) {
     var iframe;
     var iframeWrapper = __exitpage.generateNode(
@@ -144,6 +160,9 @@ var __exitpage = {
       // Replace the object by data from the API
       fdIframe.write(__exitpage.html({sites: sites}));
       fdIframe.close();
+
+      // Inject CSS
+      __exitpage.injectCSS(iframeContent.document);
 
       iframe.style.display = "block";
       iframe.removeEventListener('load', loadListener);

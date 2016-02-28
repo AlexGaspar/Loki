@@ -6,7 +6,7 @@ var IFRAME_WINDOW = 'qsldkqskl';
 var IFRAME_WRAPPER_NAME = '__DB_POPUP-iframe--wrapper';
 var IFRAME_WRAPPER_ID = '__DB_POPUP-wrapper';
 var IFRAME_NAME = '__DB_POPUP-iframe';
-var IFRAME_STORAGE = '__DB_POPUP.display';
+var IFRAME_STORAGE = '__DB_POPUP.already_seen';
 
 var API_HOSTNAME = 'http://192.168.99.100:3001/api/v1';
 
@@ -20,42 +20,33 @@ var __exitpage = {
    * Utils
    */
   readStorage: function (c_name) {
-    if (typeof window.localStorage !== "undefined") {
-        return JSON.parse(window.localStorage.getItem(c_name));
-    } else {
-        var c_value = document.cookie;
-        var c_start = c_value.indexOf(" " + c_name + "=");
-        if (c_start === -1) {
-            c_start = c_value.indexOf(c_name + "=");
-        }
-
-        if (c_start === -1) {
-            c_value = null;
-        } else {
-            c_start = c_value.indexOf("=", c_start) + 1;
-
-            var c_end = c_value.indexOf(";", c_start);
-            if (c_end === -1) {
-                c_end = c_value.length;
-            }
-            c_value = unescape(JSON.parse(c_value.substring(c_start,c_end)));
-        }
-
-        return c_value;
+    var c_value = document.cookie;
+    var c_start = c_value.indexOf(" " + c_name + "=");
+    if (c_start === -1) {
+        c_start = c_value.indexOf(c_name + "=");
     }
+
+    if (c_start === -1) {
+        c_value = null;
+    } else {
+        c_start = c_value.indexOf("=", c_start) + 1;
+
+        var c_end = c_value.indexOf(";", c_start);
+        if (c_end === -1) {
+            c_end = c_value.length;
+        }
+        c_value = unescape(JSON.parse(c_value.substring(c_start,c_end)));
+    }
+
+    return c_value;
   },
 
   writeStorage: function (name, value, expireDays) {
-    if (typeof window.localStorage !== "undefined") {
-        if (expireDays < 0) window.localStorage.removeItem(name);
-        else window.localStorage.setItem(name, JSON.stringify(value));
-    } else {
-        var expireDate = new Date();
-        expireDate.setDate(expireDate.getDate() + expireDays);
+    var expireDate = new Date();
+    expireDate.setDate(expireDate.getDate() + expireDays);
 
-        var cookieValue = escape(JSON.stringify(value)) + ((expireDays === null) ? "" : "; expires=" + expireDate.toUTCString());
-        document.cookie = name + "=" + cookieValue;
-    }
+    var cookieValue = escape(JSON.stringify(value)) + ((expireDays === null) ? "" : "; expires=" + expireDate.toUTCString());
+    document.cookie = name + "=" + cookieValue;
   },
 
   generateNode: function (type, params) {
@@ -109,7 +100,7 @@ var __exitpage = {
    * Popup Logic
    */
   main: function () {
-    if(__exitpage.readStorage(IFRAME_STORAGE) !== false) {
+    if(__exitpage.readStorage(IFRAME_STORAGE) !== true) {
       require('./css/iframe.css');
 
       request
@@ -117,16 +108,17 @@ var __exitpage = {
         .end(function(err, res) {
           if (err) { return console.log('something went wrong...', err);}
           __exitpage.insertPopup(res.body);    
-          ouibounce(document.getElementById('SLDSKDAKDSQK'));
+          ouibounce(document.getElementById(IFRAME_ID), {
+            cookieName: IFRAME_STORAGE
+          });
         });
       
     }
   },
 
   closeHandler: function () {
-    console.log('Closing');
     __exitpage.removeNodeFromTag('body', __exitpage.iframe.wrapper);
-    __exitpage.writeStorage(IFRAME_STORAGE, false);
+    __exitpage.writeStorage(IFRAME_STORAGE, true);
   },
 
   // Look into a way to require it directly from handlebar template

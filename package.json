@@ -18,16 +18,15 @@
     "url": "https://github.com/Dash-bob/Loki/issues"
   },
   "homepage": "https://github.com/Dash-bob/Loki#readme",
-  "dependencies": {
+  "devDependencies": {
     "css-loader": "^0.23.1",
     "handlebars": "^4.0.5",
     "handlebars-loader": "^1.1.4",
     "less": "^2.6.0",
     "less-loader": "^2.2.2",
+    "ouibounce": "0.0.11",
     "style-loader": "^0.13.0",
     "superagent": "^1.7.2"
-  },
-  "devDependencies": {
     "less-loader": "^2.2.2",
     "webpack": "^1.12.14",
     "webpack-dev-server": "^1.14.1"

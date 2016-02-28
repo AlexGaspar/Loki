@@ -1,4 +1,5 @@
 var request = require('superagent');
+var ouibounce = require('ouibounce');
 
 var IFRAME_ID = 'SLDSKDAKDSQK';
 var IFRAME_WINDOW = 'qsldkqskl';
@@ -115,7 +116,8 @@ var __exitpage = {
         .get(API_HOSTNAME + '/sites')
         .end(function(err, res) {
           if (err) { return console.log('something went wrong...', err);}
-          __exitpage.insertPopup(res.body);      
+          __exitpage.insertPopup(res.body);    
+          ouibounce(document.getElementById('SLDSKDAKDSQK'));
         });
       
     }
@@ -164,7 +166,6 @@ var __exitpage = {
       // Inject CSS
       __exitpage.injectCSS(iframeContent.document);
 
-      iframe.style.display = "block";
       iframe.removeEventListener('load', loadListener);
     };
 

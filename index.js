@@ -114,10 +114,7 @@ var __exitpage = {
         .query(__exitpage.getVisitorInfo())
         .end(function(err, res) {
           if (err) { return console.log('something went wrong...', err);}
-          __exitpage.insertPopup(res.body);    
-          ouibounce(document.getElementById(IFRAME_ID), {
-            cookieName: IFRAME_STORAGE
-          });
+          __exitpage.insertPopup(res.body);
         });
       
     }
@@ -164,6 +161,11 @@ var __exitpage = {
 
       // Inject CSS
       __exitpage.injectCSS(iframeContent.document);
+
+      // Use Exit technologie to display it
+      ouibounce(document.getElementById(IFRAME_ID), {
+        cookieName: IFRAME_STORAGE
+      });
 
       iframe.removeEventListener('load', loadListener);
     };

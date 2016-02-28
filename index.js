@@ -100,13 +100,13 @@ var __exitpage = {
     return {
       lang: window.navigator.userLanguage || window.navigator.language
     }
-  }
+  },
 
   /**
    * Popup Logic
    */
   main: function () {
-    if(__exitpage.readStorage(IFRAME_STORAGE) !== true) {
+    if(__exitpage.readStorage(IFRAME_STORAGE) !== 'true') {
       require('./css/iframe.css');
 
       request

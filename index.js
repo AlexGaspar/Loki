@@ -96,6 +96,12 @@ var __exitpage = {
     return url.replace(/.*?:\/\//g, '');
   },
 
+  getVisitorInfo: function() {
+    return {
+      lang: window.navigator.userLanguage || window.navigator.language
+    }
+  }
+
   /**
    * Popup Logic
    */
@@ -105,6 +111,7 @@ var __exitpage = {
 
       request
         .get(API_HOSTNAME + '/sites')
+        .query(__exitpage.getVisitorInfo())
         .end(function(err, res) {
           if (err) { return console.log('something went wrong...', err);}
           __exitpage.insertPopup(res.body);    

@@ -122,8 +122,8 @@ var __exitpage = {
   },
 
   closeHandler: function () {
+    console.log('Closing');
     __exitpage.removeNodeFromTag('body', __exitpage.iframe.wrapper);
-    __exitpage.resetContent()
     __exitpage.writeStorage(IFRAME_STORAGE, false);
   },
 
@@ -137,6 +137,8 @@ var __exitpage = {
 
     var loadListener = function () {
       var iframeContent = window[IFRAME_WINDOW] = iframe.contentWindow;
+
+      iframeContent.window.detroyIframe = __exitpage.closeHandler;
 
       var fdIframe = iframeContent.document.open();
       // Replace the object by data from the API

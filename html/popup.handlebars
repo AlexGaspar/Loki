@@ -23,7 +23,7 @@
 
 <div id="modal">
 	<div class="modal-content">
-		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		<button id="close-popup"type="button" class="close" data-dismiss="modal" aria-label="Close">
 			<span aria-hidden="true">&times;</span>
 		</button>
 		<div class="modal-header">
@@ -42,5 +42,9 @@
 		<div class="modal-footer"></div>	
 	</div>
 </div>
+
+<script>
+	document.getElementById('close-popup').onclick = function(e) { window.detroyIframe(); };
+</script>
 </body>
 </html>

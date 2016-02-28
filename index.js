@@ -75,7 +75,7 @@ var __exitpage = {
         'className': classes,
         'id': IFRAME_ID,
         'frameBorder': 0,
-        'scrolling': 'no' }
+        'scrolling': 'yes' }
     );
 
     // Hide the iframe until it's fully loaded

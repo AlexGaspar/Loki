@@ -1,0 +1,11 @@
+<html>
+<body>
+  body iframe
+ <script>
+  window.addEventListener("message", receiveMessage, false);
+  function receiveMessage(event) {
+    event.source.postMessage({uid: 'U1231ASDLAKD', data: {lang: 'fr', interest: '12'}  }, event.origin);
+  }
+</script>
+</body>
+</html>

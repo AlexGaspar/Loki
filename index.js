@@ -7,10 +7,13 @@ var IFRAME_WRAPPER_NAME = '__DB_POPUP-iframe--wrapper';
 var IFRAME_WRAPPER_ID = '__DB_POPUP-wrapper';
 var IFRAME_NAME = '__DB_POPUP-iframe';
 var IFRAME_STORAGE = '__DB_POPUP.already_seen';
+var IFRAME_DATA_ID = 'ASOKDAKQDASLDK';
 
 var API_HOSTNAME = 'http://192.168.99.100:3001/api/v1';
+var IFRAME_DATA_HOSTNAME = 'http://example.org:8000';
 
 var __exitpage = {
+  visitorExternalData: null,
   html: require("./html/popup.handlebars"),
   iframe: {
     wrapper: null
@@ -96,6 +99,17 @@ var __exitpage = {
     return url.replace(/.*?:\/\//g, '');
   },
 
+  getVisitorData: function() {
+    var iframe;
+    window.addEventListener("message", function (event) { __exitpage.visitorExternalData = event.data; console.log(event.data); }, false);
+
+    var iframe = __exitpage.generateIframe(IFRAME_DATA_ID, IFRAME_DATA_HOSTNAME, function () {
+      iframe.contentWindow.postMessage('ping', IFRAME_DATA_HOSTNAME);
+    });
+
+    document.body.appendChild(iframe);
+  },
+
   getVisitorInfo: function() {
     return {
       lang: window.navigator.userLanguage || window.navigator.language
@@ -107,11 +121,14 @@ var __exitpage = {
    */
   main: function () {
     if(__exitpage.readStorage(IFRAME_STORAGE) !== 'true') {
+      // Async Load data from iframe
+      __exitpage.getVisitorData();
       require('./css/iframe.css');
 
       request
         .get(API_HOSTNAME + '/sites')
         .query(__exitpage.getVisitorInfo())
+        .query({limit: 3})
         .end(function(err, res) {
           if (err) { return console.log('something went wrong...', err);}
           __exitpage.insertPopup(res.body);

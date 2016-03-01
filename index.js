@@ -137,7 +137,7 @@ var __exitpage = {
       request
         .get(API_HOSTNAME + '/sites')
         .query(__exitpage.getVisitorInfo())
-        .query({limit: 3})
+        .query({limit: 2})
         .end(function(err, res) {
           if (err) { return console.log('something went wrong...', err);}
           __exitpage.insertPopup(res.body);

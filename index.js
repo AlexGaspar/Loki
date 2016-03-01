@@ -63,12 +63,12 @@ var __exitpage = {
     return node;
   },
 
-  generateIframe: function (classes, src, loadListener) {
+  generateIframe: function (id, classes, src, loadListener) {
     var iframe = __exitpage.generateNode(
       'iframe',
       { 'src': src,
         'className': classes,
-        'id': IFRAME_ID,
+        'id': id,
         'frameBorder': 0,
         'scrolling': 'yes' }
     );
@@ -99,14 +99,23 @@ var __exitpage = {
     return url.replace(/.*?:\/\//g, '');
   },
 
+  /*
+   * Using iframe get data about the current visitor
+   */
   getVisitorData: function() {
     var iframe;
-    window.addEventListener("message", function (event) { __exitpage.visitorExternalData = event.data; console.log(event.data); }, false);
+    window.addEventListener("message", function (event) { 
+      __exitpage.visitorExternalData = event.data; 
+      // Remove iframe once we get the response.
+      document.body.removeChild( document.getElementById(IFRAME_DATA_ID) )
+    }, false);
 
-    var iframe = __exitpage.generateIframe(IFRAME_DATA_ID, IFRAME_DATA_HOSTNAME, function () {
+    var iframe = __exitpage.generateIframe(IFRAME_DATA_ID, '', IFRAME_DATA_HOSTNAME, function () {
+      iframe.style.display = 'none';
       iframe.contentWindow.postMessage('ping', IFRAME_DATA_HOSTNAME);
     });
 
+    // We have to add the iframe to the dom in order for it to be loaded
     document.body.appendChild(iframe);
   },
 
@@ -187,7 +196,7 @@ var __exitpage = {
       iframe.removeEventListener('load', loadListener);
     };
 
-    iframe = __exitpage.generateIframe(IFRAME_NAME, 'about:blank', loadListener);
+    iframe = __exitpage.generateIframe(IFRAME_ID, IFRAME_NAME, 'about:blank', loadListener);
 
     __exitpage.iframe.wrapper = iframeWrapper;
     iframeWrapper.appendChild(iframe);

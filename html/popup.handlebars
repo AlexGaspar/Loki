@@ -3,32 +3,31 @@
     <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
   </head>
 <body>
-
 <div id="modal">
   <div class="modal-content">
-    <button id="close-popup"type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <button id="close-popup"type="button" class="close" data-dismiss="modal" aria-label="{{texts.close}}">
       <span aria-hidden="true">&times;</span>
     </button>
     <div class="modal-header">
-      <h3>Merci de votre visite !</h3>
-      <h4>Avez-vous vu les offres de nos partenaires ?</h4>
+      <h3>{{texts.title}}</h3>
+      <h4>{{texts.sub_title}}</h4>
     </div>
     <div class="modal-body">
       <div class="row">
       {{#sites}}
-        <div class="col-cs-12 col-sm-6 partner-container">          
+        <div class="col-cs-12 col-sm-6 partner-container">
           <img src="https://www.woorank.com/assets/img/exit-page/internet-vista.png" />
-          <h5>{{hostname}}</h5>
-          <p>alsdk lakdl kadl kaldsk alsdk ladk lakd lakd lkd lkadl kadl kaldks alsdk lakds lakds lakd lkad lkaldk alkd lakd lakd lakd lakdl kaldk alkd lak</p>
-          <a class="btn" href="{{hostname}}">Tous gratos mon gars !</a>
+          <h5>{{title}}</h5>
+          <p>{{description}}</p>
+          <a class="btn" href="{{hostname}}">{{button}}</a>
         </div>
       {{/sites}}
-      </div>  
+      </div>
     </div>
   </div>
 </div>
-
 <script>
+  // Remove & destroy the iframe on close
   document.getElementById('close-popup').onclick = function(e) { window.detroyIframe(); };
 </script>
 </body>

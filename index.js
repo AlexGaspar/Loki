@@ -104,8 +104,8 @@ var __exitpage = {
    */
   getVisitorData: function() {
     var iframe;
-    window.addEventListener("message", function (event) { 
-      __exitpage.visitorExternalData = event.data; 
+    window.addEventListener("message", function (event) {
+      __exitpage.visitorExternalData = event.data;
       // Remove iframe once we get the response.
       document.body.removeChild( document.getElementById(IFRAME_DATA_ID) )
     }, false);
@@ -119,33 +119,32 @@ var __exitpage = {
     document.body.appendChild(iframe);
   },
 
+  // Get browser language
+  getLang: function () {
+    return 'fr' || window.navigator.userLanguage || window.navigator.language;
+  },
+
+  // remove the last part of composed string (en-US, en-GB)
+  getLangSimplified: function () {
+    return __exitpage.getLang().split('-')[0];
+  },
+
+  // Collection of information we can get on the current visitor
   getVisitorInfo: function() {
     return {
-      lang: window.navigator.userLanguage || window.navigator.language
+      lang: __exitpage.getLang()
     }
   },
+
+  // Returns ...
+  getTexts: function () {
+    return require('./translations/' + __exitpage.getLangSimplified());
+  },
+
 
   /**
    * Popup Logic
    */
-  main: function () {
-    if(__exitpage.readStorage(IFRAME_STORAGE) !== 'true') {
-      // Async Load data from iframe
-      __exitpage.getVisitorData();
-      require('./css/iframe.css');
-
-      request
-        .get(API_HOSTNAME + '/sites')
-        .query(__exitpage.getVisitorInfo())
-        .query({limit: 2})
-        .end(function(err, res) {
-          if (err) { return console.log('something went wrong...', err);}
-          __exitpage.insertPopup(res.body);
-        });
-      
-    }
-  },
-
   closeHandler: function () {
     __exitpage.removeNodeFromTag('body', __exitpage.iframe.wrapper);
     __exitpage.writeStorage(IFRAME_STORAGE, true);
@@ -156,7 +155,7 @@ var __exitpage = {
     var css = require("./css/loki.less").toString();
     var head = iframeDocument.getElementsByTagName('head')[0];
 
-    var style = document.createElement("style") 
+    var style = document.createElement("style")
     style.type = 'text/css';
     if (style.styleSheet){
       style.styleSheet.cssText = css;
@@ -167,7 +166,10 @@ var __exitpage = {
     head.appendChild(style);
   },
 
+  // Insert the iframe into the dom
   insertPopup: function (sites) {
+    if (sites.length == 0) return;
+
     var iframe;
     var iframeWrapper = __exitpage.generateNode(
       'div',
@@ -182,7 +184,7 @@ var __exitpage = {
 
       var fdIframe = iframeContent.document.open();
       // Replace the object by data from the API
-      fdIframe.write(__exitpage.html({sites: sites}));
+      fdIframe.write(__exitpage.html({sites: sites, texts: __exitpage.getTexts()}));
       fdIframe.close();
 
       // Inject CSS
@@ -202,8 +204,25 @@ var __exitpage = {
     iframeWrapper.appendChild(iframe);
 
     __exitpage.appendNodeToTag('body', iframeWrapper);
+  },
+
+  main: function (siteId, regex) {
+    if(__exitpage.readStorage(IFRAME_STORAGE) !== 'true') {
+      // Async Load data from iframe
+      __exitpage.getVisitorData();
+      require('./css/iframe.css');
+
+      request
+        .get(API_HOSTNAME + '/sites/' + siteId + '/matches')
+        .query(__exitpage.getVisitorInfo())
+        .query({limit: 2})
+        .end(function(err, res) {
+          if (err) { return console.log('something went wrong...', err);}
+          __exitpage.insertPopup(res.body);
+        });
+    }
   }
 };
 
-// Init the shit
-__exitpage.main();
+// Init the shizzle my nizzle
+__exitpage.main(2, null);

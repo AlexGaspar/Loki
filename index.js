@@ -9,6 +9,8 @@ var IFRAME_NAME = '__DB_POPUP-iframe';
 var IFRAME_STORAGE = '__DB_POPUP.already_seen';
 var IFRAME_DATA_ID = 'ASOKDAKQDASLDK';
 
+var DEBUG_COOKIES = '__DB_POPUP.debug';
+
 var API_HOSTNAME = 'http://192.168.99.100:3001/api/v1';
 var IFRAME_DATA_HOSTNAME = 'http://example.org:8000';
 
@@ -22,6 +24,13 @@ var __exitpage = {
   /**
    * Utils
    */
+   debug: function (string) {
+     // Since we read it from a cookie it's a string
+     if (__exitpage.readStorage(DEBUG_COOKIES)) {
+       console.log(string);
+     }
+   },
+
   readStorage: function (c_name) {
     var c_value = document.cookie;
     var c_start = c_value.indexOf(" " + c_name + "=");
@@ -141,7 +150,6 @@ var __exitpage = {
     return require('./translations/' + __exitpage.getLangSimplified());
   },
 
-
   /**
    * Popup Logic
    */
@@ -169,6 +177,7 @@ var __exitpage = {
   // Insert the iframe into the dom
   insertPopup: function (sites) {
     if (sites.length == 0) return;
+    __exitpage.debug('Loading iframe');
 
     var iframe;
     var iframeWrapper = __exitpage.generateNode(
@@ -178,6 +187,7 @@ var __exitpage = {
     );
 
     var loadListener = function () {
+      __exitpage.debug('Listener called');
       var iframeContent = window[IFRAME_WINDOW] = iframe.contentWindow;
 
       iframeContent.window.detroyIframe = __exitpage.closeHandler;
@@ -192,7 +202,7 @@ var __exitpage = {
 
       // Use Exit technologie to display it
       ouibounce(document.getElementById(IFRAME_ID), {
-        cookieName: IFRAME_STORAGE
+        cookieDomain: 'not-a-domain' // Hacky way to disable the popup check on ouibounce
       });
 
       iframe.removeEventListener('load', loadListener);
@@ -207,7 +217,7 @@ var __exitpage = {
   },
 
   main: function (siteId, regex) {
-    if(__exitpage.readStorage(IFRAME_STORAGE) !== 'true') {
+    if(__exitpage.readStorage(IFRAME_STORAGE) !== 'true' || __exitpage.readStorage(DEBUG_COOKIES)) {
       // Async Load data from iframe
       __exitpage.getVisitorData();
       require('./css/iframe.css');
@@ -217,7 +227,7 @@ var __exitpage = {
         .query(__exitpage.getVisitorInfo())
         .query({limit: 2})
         .end(function(err, res) {
-          if (err) { return console.log('something went wrong...', err);}
+          if (err) { return __exitpage.debug('something went wrong...', err);}
           __exitpage.insertPopup(res.body);
         });
     }

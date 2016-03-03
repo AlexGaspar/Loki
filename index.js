@@ -130,7 +130,7 @@ var __exitpage = {
 
   // Get browser language
   getLang: function () {
-    return 'fr' || window.navigator.userLanguage || window.navigator.language;
+    return window.navigator.userLanguage || window.navigator.language;
   },
 
   // remove the last part of composed string (en-US, en-GB)

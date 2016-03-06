@@ -11,7 +11,7 @@ var IFRAME_DATA_ID = 'ASOKDAKQDASLDK';
 
 var DEBUG_COOKIES = '__DB_POPUP.debug';
 
-var API_HOSTNAME = 'http://192.168.99.100:3001/api/v1';
+var API_HOSTNAME = 'http://192.168.99.100:3001/graphql';
 var IFRAME_DATA_HOSTNAME = 'http://example.org:8000';
 
 var __exitpage = {
@@ -176,7 +176,10 @@ var __exitpage = {
 
   // Insert the iframe into the dom
   insertPopup: function (sites) {
-    if (sites.length == 0) return;
+    if (sites.length === 0) {
+      __exitpage.debug('No website to show');
+      return;
+    }
     __exitpage.debug('Loading iframe');
 
     var iframe;
@@ -223,16 +226,16 @@ var __exitpage = {
       require('./css/iframe.css');
 
       request
-        .get(API_HOSTNAME + '/sites/' + siteId + '/matches')
+        .get(API_HOSTNAME)
         .query(__exitpage.getVisitorInfo())
-        .query({limit: 2})
-        .end(function(err, res) {
-          if (err) { return __exitpage.debug('something went wrong...', err);}
-          __exitpage.insertPopup(res.body);
+        .query({query: '{ matchingSites(id: 1, language_code: "' + __exitpage.getLangSimplified() + '") { logo translations { description title button } } }'})
+        .end(function (err, res) {
+          if (err) { return __exitpage.debug('something went wrong...', err); }
+          __exitpage.insertPopup(res.body.data.matchingSites);
         });
     }
   }
 };
 
 // Init the shizzle my nizzle
-__exitpage.main(2, null);
+__exitpage.main(1, null);

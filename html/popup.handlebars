@@ -16,10 +16,12 @@
       <div class="row">
       {{#sites}}
         <div class="col-cs-12 col-sm-6 partner-container">
-          <img src="https://www.woorank.com/assets/img/exit-page/internet-vista.png" />
-          <h5>{{title}}</h5>
-          <p>{{description}}</p>
-          <a class="btn" href="{{hostname}}">{{button}}</a>
+          <img src="{{logo}}" />
+          {{#translations}}
+            <h5>{{title}}</h5>
+            <p>{{description}}</p>
+            <a class="btn" href="{{hostname}}">{{button}}</a>
+          {{/translations}}
         </div>
       {{/sites}}
       </div>

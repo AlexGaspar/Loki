@@ -15,6 +15,7 @@ var API_HOSTNAME = 'http://192.168.99.100:3001/graphql';
 var IFRAME_DATA_HOSTNAME = 'http://example.org:8000';
 
 var __exitpage = {
+  id: null,
   visitorExternalData: null,
   html: require('./html/popup.handlebars'),
   iframe: {
@@ -111,6 +112,12 @@ var __exitpage = {
   regexStuff: function (regex) {
     var pathname = window.location.pathname;
     console.log(pathname);
+  sendConvertion: function (dataAttributes) {
+    console.log(dataAttributes);
+    request
+      .post(API_HOSTNAME)
+      .query({query: 'mutation AddConversion { addConversion(site_to_id:' + dataAttributes.id + ', site_from_id: ' + __exitpage.id + ') { id } }'})
+      .end(function () {});
   },
 
   /*
@@ -198,6 +205,7 @@ var __exitpage = {
       var iframeContent = window[IFRAME_WINDOW] = iframe.contentWindow;
 
       iframeContent.window.detroyIframe = __exitpage.closeHandler;
+      iframeContent.window.sendConvertion = __exitpage.sendConvertion;
 
       var fdIframe = iframeContent.document.open();
       // Replace the object by data from the API
@@ -223,8 +231,9 @@ var __exitpage = {
     __exitpage.appendNodeToTag('body', iframeWrapper);
   },
 
-  main: function (siteId, regex) {
-    if (__exitpage.readStorage(IFRAME_STORAGE) !== 'true' || __exitpage.readStorage(DEBUG_COOKIES)) {
+  main: function (siteId, wildcard) {
+    if ((__exitpage.readStorage(IFRAME_STORAGE) !== 'true' && !__exitpage.isExcludedPage(wildcard)) || __exitpage.readStorage(DEBUG_COOKIES)) {
+      __exitpage.id = siteId;
       // Async Load data from iframe
       __exitpage.getVisitorData();
       require('./css/iframe.css');
@@ -232,7 +241,7 @@ var __exitpage = {
       request
         .get(API_HOSTNAME)
         .query(__exitpage.getVisitorInfo())
-        .query({query: '{ matchingSites(id: 1, language_code: "' + __exitpage.getLangSimplified() + '") { logo translations { description title button } } }'})
+        .query({query: '{ matchingSites(id: 1, language_code: "' + __exitpage.getLangSimplified() + '") { id hostname logo translations { description title button } } }'})
         .end(function (err, res) {
           if (err) { return __exitpage.debug('something went wrong...', err); }
           __exitpage.insertPopup(res.body.data.matchingSites);

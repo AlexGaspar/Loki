@@ -20,7 +20,7 @@
           {{#translations}}
             <h5>{{title}}</h5>
             <p>{{description}}</p>
-            <a class="btn" href="{{hostname}}">{{button}}</a>
+            <a class="btn" href="//{{../hostname}}" data-id="{{../id}}">{{button}}</a>
           {{/translations}}
         </div>
       {{/sites}}
@@ -29,6 +29,12 @@
   </div>
 </div>
 <script>
+  // HandleClick
+  var scFunction = function (e) { window.sendConvertion(this.dataset) };
+  var links = document.getElementsByClassName('btn');
+  for (var i=0; i < links.length; i++) {
+    links[i].onclick = scFunction;
+  }
   // Remove & destroy the iframe on close
   document.getElementById('close-popup').onclick = function(e) { window.detroyIframe(); };
 </script>

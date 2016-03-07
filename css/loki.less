@@ -3,7 +3,7 @@ body { background-color: rgba(0,0,0,0.3); }
 .modal-content {
   width: 900px;
   max-width: 85%;
-  
+
   padding: 30px;
   margin: 30px auto;
 
@@ -56,8 +56,11 @@ body { background-color: rgba(0,0,0,0.3); }
   text-align: center;
   padding: 0 25px 10px 25px;
 
-  &:nth-child(odd) {
-    border-right: 1px solid #CCD1D9;
+  /* Small devices (tablets,  and up) */
+  @media (min-width: 768px) {
+    &:nth-child(odd) {
+      border-right: 1px solid #CCD1D9;
+    }
   }
 
   img {

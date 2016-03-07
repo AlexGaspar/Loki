@@ -16,7 +16,7 @@ var IFRAME_DATA_HOSTNAME = 'http://example.org:8000';
 
 var __exitpage = {
   visitorExternalData: null,
-  html: require("./html/popup.handlebars"),
+  html: require('./html/popup.handlebars'),
   iframe: {
     wrapper: null
   },
@@ -24,30 +24,30 @@ var __exitpage = {
   /**
    * Utils
    */
-   debug: function (string) {
-     // Since we read it from a cookie it's a string
-     if (__exitpage.readStorage(DEBUG_COOKIES)) {
-       console.log(string);
-     }
-   },
+  debug: function (string) {
+    // Since we read it from a cookie it's a string
+    if (__exitpage.readStorage(DEBUG_COOKIES)) {
+      console.log(string);
+    }
+  },
 
   readStorage: function (c_name) {
     var c_value = document.cookie;
-    var c_start = c_value.indexOf(" " + c_name + "=");
+    var c_start = c_value.indexOf(' ' + c_name + '=');
     if (c_start === -1) {
-        c_start = c_value.indexOf(c_name + "=");
+      c_start = c_value.indexOf(c_name + '=');
     }
 
     if (c_start === -1) {
-        c_value = null;
+      c_value = null;
     } else {
-        c_start = c_value.indexOf("=", c_start) + 1;
+      c_start = c_value.indexOf('=', c_start) + 1;
 
-        var c_end = c_value.indexOf(";", c_start);
-        if (c_end === -1) {
-            c_end = c_value.length;
-        }
-        c_value = unescape(JSON.parse(c_value.substring(c_start,c_end)));
+      var c_end = c_value.indexOf(';', c_start);
+      if (c_end === -1) {
+        c_end = c_value.length;
+      }
+      c_value = unescape(JSON.parse(c_value.substring(c_start, c_end)));
     }
 
     return c_value;
@@ -57,15 +57,15 @@ var __exitpage = {
     var expireDate = new Date();
     expireDate.setDate(expireDate.getDate() + expireDays);
 
-    var cookieValue = escape(JSON.stringify(value)) + ((expireDays === null) ? "" : "; expires=" + expireDate.toUTCString());
-    document.cookie = name + "=" + cookieValue;
+    var cookieValue = escape(JSON.stringify(value)) + ((expireDays === null) ? '' : '; expires=' + expireDate.toUTCString());
+    document.cookie = name + '=' + cookieValue;
   },
 
   generateNode: function (type, params) {
-    var params = params || {};
+    params = params || {};
     var node = document.createElement(type);
 
-    Object.keys(params).forEach(function(key) {
+    Object.keys(params).forEach(function (key) {
       node[key] = params[key];
     });
 
@@ -92,7 +92,7 @@ var __exitpage = {
     return iframe;
   },
 
-  getElementByTagName: function(tagName) {
+  getElementByTagName: function (tagName) {
     return document.getElementsByTagName(tagName)[0];
   },
 
@@ -104,19 +104,23 @@ var __exitpage = {
     return __exitpage.getElementByTagName(tagName).appendChild(el);
   },
 
-  hostnameFromUrl: function(url) {
+  hostnameFromUrl: function (url) {
     return url.replace(/.*?:\/\//g, '');
+  },
+
+  regexStuff: function (regex) {
+    var pathname = window.location.pathname;
+    console.log(pathname);
   },
 
   /*
    * Using iframe get data about the current visitor
    */
-  getVisitorData: function() {
-    var iframe;
-    window.addEventListener("message", function (event) {
+  getVisitorData: function () {
+    window.addEventListener('message', function (event) {
       __exitpage.visitorExternalData = event.data;
       // Remove iframe once we get the response.
-      document.body.removeChild( document.getElementById(IFRAME_DATA_ID) )
+      document.body.removeChild(document.getElementById(IFRAME_DATA_ID));
     }, false);
 
     var iframe = __exitpage.generateIframe(IFRAME_DATA_ID, '', IFRAME_DATA_HOSTNAME, function () {
@@ -139,10 +143,10 @@ var __exitpage = {
   },
 
   // Collection of information we can get on the current visitor
-  getVisitorInfo: function() {
+  getVisitorInfo: function () {
     return {
       lang: __exitpage.getLang()
-    }
+    };
   },
 
   // Returns ...
@@ -159,13 +163,13 @@ var __exitpage = {
   },
 
   // Look into a way to require it directly from handlebar template
-  injectCSS: function(iframeDocument) {
-    var css = require("./css/loki.less").toString();
+  injectCSS: function (iframeDocument) {
+    var css = require('./css/loki.less').toString();
     var head = iframeDocument.getElementsByTagName('head')[0];
 
-    var style = document.createElement("style")
+    var style = document.createElement('style');
     style.type = 'text/css';
-    if (style.styleSheet){
+    if (style.styleSheet) {
       style.styleSheet.cssText = css;
     } else {
       style.appendChild(document.createTextNode(css));
@@ -220,7 +224,7 @@ var __exitpage = {
   },
 
   main: function (siteId, regex) {
-    if(__exitpage.readStorage(IFRAME_STORAGE) !== 'true' || __exitpage.readStorage(DEBUG_COOKIES)) {
+    if (__exitpage.readStorage(IFRAME_STORAGE) !== 'true' || __exitpage.readStorage(DEBUG_COOKIES)) {
       // Async Load data from iframe
       __exitpage.getVisitorData();
       require('./css/iframe.css');

@@ -109,9 +109,21 @@ var __exitpage = {
     return url.replace(/.*?:\/\//g, '');
   },
 
-  regexStuff: function (regex) {
+  preg_quote: function (str, delimiter) {
+    return (str + '').replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'), '\\$&');
+  },
+
+  wildcardToRegex: function (str) {
+    return new RegExp(__exitpage.preg_quote(str).replace(/\\\*/g, '.*').replace(/\\\?/g, '.'), 'g');
+  },
+
+  isExcludedPage: function (wildcard) {
     var pathname = window.location.pathname;
-    console.log(pathname);
+    var regex = __exitpage.wildcardToRegex(wildcard);
+
+    return pathname.match(regex) !== null;
+  },
+
   sendConvertion: function (dataAttributes) {
     console.log(dataAttributes);
     request
@@ -251,4 +263,4 @@ var __exitpage = {
 };
 
 // Init the shizzle my nizzle
-__exitpage.main(1, null);
+__exitpage.main(1, 'webpack-*-server/');

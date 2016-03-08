@@ -20,7 +20,7 @@
           {{#translations}}
             <h5>{{title}}</h5>
             <p>{{description}}</p>
-            <a class="btn" href="//{{../hostname}}" data-id="{{../id}}">{{button}}</a>
+            <a class="btn btn-link" href="//{{../hostname}}" data-id="{{../id}}">{{button}}</a>
           {{/translations}}
         </div>
       {{/sites}}
@@ -30,8 +30,12 @@
 </div>
 <script>
   // HandleClick
-  var scFunction = function (e) { window.sendConvertion(this.dataset) };
-  var links = document.getElementsByClassName('btn');
+  var scFunction = function (e) {
+    window.sendConvertion(this.dataset, this.href);
+    return false;
+  };
+  // Assign handler to click
+  var links = document.getElementsByClassName('btn-link');
   for (var i=0; i < links.length; i++) {
     links[i].onclick = scFunction;
   }

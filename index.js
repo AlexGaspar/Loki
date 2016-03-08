@@ -124,12 +124,13 @@ var __exitpage = {
     return pathname.match(regex) !== null;
   },
 
-  sendConvertion: function (dataAttributes) {
-    console.log(dataAttributes);
+  sendConvertion: function (dataAttributes, href) {
     request
       .post(API_HOSTNAME)
       .query({query: 'mutation AddConversion { addConversion(site_to_id:' + dataAttributes.id + ', site_from_id: ' + __exitpage.id + ') { id } }'})
       .end(function () {});
+
+    window.location = href;
   },
 
   /*

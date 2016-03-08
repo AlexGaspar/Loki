@@ -153,7 +153,9 @@ var __exitpage = {
 
   // Get browser language
   getLang: function () {
-    return window.navigator.userLanguage || window.navigator.language;
+    return document.getElementsByTagName('html')[0].getAttribute('lang')
+      || window.navigator.userLanguage
+      || window.navigator.language;
   },
 
   // remove the last part of composed string (en-US, en-GB)

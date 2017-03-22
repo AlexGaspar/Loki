@@ -4,7 +4,7 @@
   "description": "Exit popup",
   "main": "index.js",
   "scripts": {
-    "start": "webpack ./index.js loki.js",
+    "start": "webpack ./index.js",
     "ds": "webpack-dev-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -1,10 +1,10 @@
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   </head>
 <body>
 <div id="modal">
-  <div class="modal-content">
+  <div id="modal-content" class="modal-content">
     <button id="close-popup"type="button" class="close" data-dismiss="modal" aria-label="{{texts.close}}">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -16,12 +16,12 @@
       <div class="row">
       {{#sites}}
         <div class="col-cs-12 col-sm-6 partner-container">
-          <img src="{{logo}}" />
-          {{#translations}}
-            <h5>{{title}}</h5>
-            <p>{{description}}</p>
-            <a class="btn btn-link" href="//{{../hostname}}" data-id="{{../id}}">{{button}}</a>
-          {{/translations}}
+          <div class="img-container">
+            <a class="link-vst" href="{{url}}" data-id="{{uuid}}"> <img src="{{img}}" /> </a>
+          </div>
+          <h5>{{title_text}}</h5>
+          <p>{{description}}</p>
+          <a class="link-vst btn btn-link" href="{{url}}" data-id="{{uuid}}">{{button_text}}</a>
         </div>
       {{/sites}}
       </div>
@@ -31,16 +31,19 @@
 <script>
   // HandleClick
   var scFunction = function (e) {
-    window.sendConvertion(this.dataset, this.href);
+    parent.__exitpage.incrementClick(this.dataset, this.href);
     return false;
   };
   // Assign handler to click
-  var links = document.getElementsByClassName('btn-link');
+  var links = document.getElementsByClassName('link-vst');
   for (var i=0; i < links.length; i++) {
     links[i].onclick = scFunction;
   }
   // Remove & destroy the iframe on close
-  document.getElementById('close-popup').onclick = function(e) { window.detroyIframe(); };
+  document.getElementById('close-popup').onclick = function (e) { parent.__exitpage.closeHandler(); };
+  // These two need to be together so the onlick on the modal doesn't propagate to html
+  document.getElementsByTagName('html')[0].onclick = function (e) { parent.__exitpage.closeHandler(); };
+  document.getElementById('modal-content').onclick = function (e) { e.stopPropagation(); };
 </script>
 </body>
 </html>

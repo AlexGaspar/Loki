@@ -1,17 +1,19 @@
 var request = require('superagent');
 var ouibounce = require('ouibounce');
 
-var IFRAME_ID = 'SLDSKDAKDSQK';
-var IFRAME_WINDOW = 'qsldkqskl';
-var IFRAME_WRAPPER_NAME = '__DB_POPUP-iframe--wrapper';
-var IFRAME_WRAPPER_ID = '__DB_POPUP-wrapper';
-var IFRAME_NAME = '__DB_POPUP-iframe';
-var IFRAME_STORAGE = '__DB_POPUP.already_seen';
+var IFRAME_ID = 'PUqnputCEsTgiYKdVdmxbXNxdCkjBRhenRcC9jKkpmQshCeGTfbKGdZokUfVRVvX';
+var IFRAME_WINDOW = 'MLpsrBJfsEftqNgUHwKycjxGLyeqTgcDusbPdfidoem6ZpHNAwvJovjLvRRfDHTX';
+var IFRAME_WRAPPER_NAME = '__VISITURN_GlUHW-iframe--wrapper';
+var IFRAME_WRAPPER_ID = '__VISITURN_GlUHW-wrapper';
+var IFRAME_NAME = '__VISITURN_GlUHW-iframe';
+var IFRAME_STORAGE = '__VISITURN_GlUHW.already_seen';
 var IFRAME_DATA_ID = 'ASOKDAKQDASLDK';
 
-var DEBUG_COOKIES = '__DB_POPUP.debug';
+var DEBUG_COOKIES = '__VISITURN_GlUHW.debug';
+var DEBUG_MODE = true;
+var SOFT_LAUNCH_KEY = 'visiturn_show';
 
-var API_HOSTNAME = 'http://192.168.99.100:3001/graphql';
+var API_HOSTNAME = 'https://api.visiturn.com/graphql';
 var IFRAME_DATA_HOSTNAME = 'http://example.org:8000';
 
 var __exitpage = {
@@ -48,7 +50,7 @@ var __exitpage = {
       if (c_end === -1) {
         c_end = c_value.length;
       }
-      c_value = unescape(JSON.parse(c_value.substring(c_start, c_end)));
+      c_value = decodeURI(JSON.parse(c_value.substring(c_start, c_end)));
     }
 
     return c_value;
@@ -58,7 +60,7 @@ var __exitpage = {
     var expireDate = new Date();
     expireDate.setDate(expireDate.getDate() + expireDays);
 
-    var cookieValue = escape(JSON.stringify(value)) + ((expireDays === null) ? '' : '; expires=' + expireDate.toUTCString());
+    var cookieValue =  encodeURI(JSON.stringify(value)) + ((expireDays === null) ? '' : '; expires=' + expireDate.toUTCString());
     document.cookie = name + '=' + cookieValue;
   },
 
@@ -124,15 +126,6 @@ var __exitpage = {
     return pathname.match(regex) !== null;
   },
 
-  sendConvertion: function (dataAttributes, href) {
-    request
-      .post(API_HOSTNAME)
-      .query({query: 'mutation AddConversion { addConversion(site_to_id:' + dataAttributes.id + ', site_from_id: ' + __exitpage.id + ') { id } }'})
-      .end(function () {});
-
-    window.location = href;
-  },
-
   /*
    * Using iframe get data about the current visitor
    */
@@ -154,9 +147,10 @@ var __exitpage = {
 
   // Get browser language
   getLang: function () {
-    return document.getElementsByTagName('html')[0].getAttribute('lang')
-      || window.navigator.userLanguage
-      || window.navigator.language;
+    // return 'fr-FR';
+    return document.getElementsByTagName('html')[0].getAttribute('lang') ||
+      window.navigator.userLanguage ||
+      window.navigator.language;
   },
 
   // remove the last part of composed string (en-US, en-GB)
@@ -212,15 +206,12 @@ var __exitpage = {
     var iframeWrapper = __exitpage.generateNode(
       'div',
        { 'id': IFRAME_WRAPPER_ID,
-         'className': IFRAME_WRAPPER_NAME }
+         'className': '__VISITURN_GlUHW--hidden' }
     );
 
     var loadListener = function () {
       __exitpage.debug('Listener called');
       var iframeContent = window[IFRAME_WINDOW] = iframe.contentWindow;
-
-      iframeContent.window.detroyIframe = __exitpage.closeHandler;
-      iframeContent.window.sendConvertion = __exitpage.sendConvertion;
 
       var fdIframe = iframeContent.document.open();
       // Replace the object by data from the API
@@ -232,7 +223,11 @@ var __exitpage = {
 
       // Use Exit technologie to display it
       ouibounce(document.getElementById(IFRAME_ID), {
-        cookieDomain: 'not-a-domain' // Hacky way to disable the popup check on ouibounce
+        cookieDomain: 'not-a-domain', // Hacky way to disable the popup check on ouibounce
+        callback: function() {
+          iframeWrapper.className = IFRAME_WRAPPER_NAME;
+          __exitpage.incrementView(sites);
+        }
       });
 
       iframe.removeEventListener('load', loadListener);
@@ -245,25 +240,65 @@ var __exitpage = {
 
     __exitpage.appendNodeToTag('body', iframeWrapper);
   },
+  sendConvertion: function (dataAttributes, href) {
+    request
+      .post(API_HOSTNAME)
+      .query({query: 'mutation AddConversion { addConversion(site_to_id:' + dataAttributes.id + ', site_from_id: ' + __exitpage.id + ') { id } }'})
+      .end(function () {});
+  },
+  //
+  incrementClick: function (data, next) {
+    request
+      .post(API_HOSTNAME)
+      .set('Accept', 'application/json')
+      .query(__exitpage.getVisitorInfo())
+      .query({query: 'mutation _ { modalClick(origin: "' + __exitpage.id + '", modal_id: "' + data.id + '") }'})
+      .end(function () {
+        window.location = next;
+      });
+  },
+  incrementView: function (sites) {
+    var uuids = sites.map(function (site) { return site.uuid });
 
+    request
+      .post(API_HOSTNAME)
+      .set('Accept', 'application/json')
+      .query(__exitpage.getVisitorInfo())
+      .query({query: 'mutation _ { modalShow(origin: "' + __exitpage.id + '", modals: ' + JSON.stringify(uuids) + ') }'})
+      .end();
+  },
   main: function (siteId, wildcard) {
-    if ((__exitpage.readStorage(IFRAME_STORAGE) !== 'true' && !__exitpage.isExcludedPage(wildcard)) || __exitpage.readStorage(DEBUG_COOKIES)) {
+    if (DEBUG_MODE || (__exitpage.readStorage(IFRAME_STORAGE) !== 'true' && !__exitpage.isExcludedPage(wildcard)) || __exitpage.readStorage(DEBUG_COOKIES)) {
       __exitpage.id = siteId;
       // Async Load data from iframe
-      __exitpage.getVisitorData();
+      // __exitpage.getVisitorData();
       require('./css/iframe.css');
 
       request
-        .get(API_HOSTNAME)
+        .post(API_HOSTNAME)
+        .set('Accept', 'application/json')
         .query(__exitpage.getVisitorInfo())
-        .query({query: '{ matchingSites(id: 1, language_code: "' + __exitpage.getLangSimplified() + '") { id hostname logo translations { description title button } } }'})
+        .query({query: '{ recommendation(lang: "' + __exitpage.getLangSimplified() + '", id: "' + __exitpage.id + '") { uuid url img title_text description button_text } }'})
         .end(function (err, res) {
           if (err) { return __exitpage.debug('something went wrong...', err); }
-          __exitpage.insertPopup(res.body.data.matchingSites);
+          __exitpage.insertPopup(res.body.data.recommendation);
         });
     }
   }
 };
 
-// Init the shizzle my nizzle
-__exitpage.main(1, 'webpack-*-server/');
+(function () {
+  if (window.location.search.substring(1).indexOf(SOFT_LAUNCH_KEY) === -1) {
+    return;
+  }
+
+  var scriptTag = document.querySelectorAll('script[data-visiturn-id]')[0];
+  if (scriptTag && scriptTag.dataset && scriptTag.dataset.visiturnId) {
+    // Init the shizzle my nizzle
+    __exitpage.main(scriptTag.dataset.visiturnId, 'webpack-*-server/');
+  }
+})();
+
+
+// Attach the lib to window
+window.__exitpage = __exitpage;

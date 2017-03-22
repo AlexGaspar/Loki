@@ -1,4 +1,8 @@
-.__DB_POPUP-iframe--wrapper {
+.__VISITURN_GlUHW--hidden {
+  display: none !important;
+}
+
+.__VISITURN_GlUHW-iframe--wrapper {
   position: fixed !important;
   display: block !important;
   z-index: 2147483630 !important;
@@ -10,7 +14,7 @@
   margin: 0 !important;
 }
 
-.__DB_POPUP-iframe--wrapper .__DB_POPUP-iframe {
+.__VISITURN_GlUHW-iframe--wrapper .__VISITURN_GlUHW-iframe {
   position: relative !important;
   top: 0 !important;
   right: 0 !important;
